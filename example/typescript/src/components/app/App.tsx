@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { IncrementAction } from '../../redux/application/application-actions';
+import { rxStore } from 'redux-xs';
 
 
 interface AppScreenProps {
@@ -16,7 +17,7 @@ const mapStateToProps = (state: RootState): AppScreenProps => ({
 class App extends Component<AppScreenProps> {
 
   onClick = () => {
-    this.props.dispatch(new IncrementAction())
+    rxStore.dispatch(new IncrementAction())
   };
 
   render() {

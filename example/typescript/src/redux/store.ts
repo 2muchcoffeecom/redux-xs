@@ -1,27 +1,24 @@
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { ApplicationState } from './application/application-state';
 import { applicationReducer } from './application/application-reducer';
+// import { rxStore } from '../../node_modules/redux-xs/dist';
 import { rxStore } from 'redux-xs';
 
+import { TestState } from './test/test-state';
 
-declare var window: any;
 
-export interface RootState {
-  application: ApplicationState;
-}
 
-const rootReducer = combineReducers({
-  application: applicationReducer,
-});
+
+
 
 const logger = (store: any) => {
   return (next: any) => {
     return function (action: any) {
-      console.group(action.type)
-      console.info('dispatching', action)
-      let result = next(action)
-      console.log('next state', store.getState())
-      console.groupEnd()
+      console.group(action.type);
+      console.info('dispatching', action);
+      let result = next(action);
+      console.log('next state', store.getState());
+      console.groupEnd();
       return result
     };
   };
@@ -36,14 +33,24 @@ const middleware = [
   logger
 ];
 
-const composeEnhancers =
-  typeof window === 'object' &&
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
 
-const enhancer = composeEnhancers(
-  applyMiddleware(...middleware),
-);
 
-const store = createStore(rootReducer, enhancer);
+export interface RootState {
+  application: ApplicationState;
+}
+
+const reducer = combineReducers({
+  application: applicationReducer,
+});
+
+
+const store = rxStore.createStore({
+  reducer,
+  middleware,
+  devtools: true,
+  states: {
+    TestState
+  }
+});
 
 export default store;

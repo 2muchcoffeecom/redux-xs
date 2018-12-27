@@ -1,3 +1,5 @@
+import { State } from 'redux-xs';
+
 export interface ApplicationState {
   count: number;
 }

@@ -21,7 +21,10 @@
     "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build"
   },
-  "dependencies": {},
+  "dependencies": {
+    "react-redux": "^6.0.0",
+    "redux": "^4.0.1"
+  },
   "peerDependencies": {
     "prop-types": "^15.5.4",
     "react": "^15.0.0 || ^16.0.0",
@@ -32,6 +35,8 @@
     "@types/jest": "^23.1.5",
     "@types/react": "^16.3.13",
     "@types/react-dom": "^16.0.5",
+    "@types/react-redux": "^6.0.11",
+    "@types/redux": "^3.6.0",
     "babel-core": "^6.26.3",
     "babel-runtime": "^6.26.0",
     "cross-env": "^5.1.4",
