@@ -1,4 +1,5 @@
-import { applyMiddleware, compose, createStore, Middleware, Reducer } from 'redux';
+import { applyMiddleware, combineReducers, compose, createStore, Middleware } from 'redux';
+import { ReplaySubject } from 'rxjs';
 
 
 declare var window: any;
@@ -7,7 +8,10 @@ declare var window: any;
 class RxStore {
   private static instance: RxStore;
 
-  private store: any;
+  public dispatch$: ReplaySubject<any> = new ReplaySubject();
+
+  public store: any;
+  public reducers: any = {};
 
   constructor() {
     if (!RxStore.instance) {
@@ -18,12 +22,12 @@ class RxStore {
   }
 
   createStore({
-    reducer,
+    reducers,
     states,
     middleware = [],
     devtools = false,
   }: {
-    reducer: Reducer,
+    reducers: any,
     states: any,
     middleware: Middleware[],
     devtools: boolean
@@ -37,7 +41,8 @@ class RxStore {
       applyMiddleware(...middleware),
     );
 
-    this.store = createStore(reducer, enhancer);
+    this.reducers = {...this.reducers, ...reducers};
+    this.store = createStore(combineReducers(this.reducers), enhancer);
 
     return this.store;
   }
@@ -46,8 +51,12 @@ class RxStore {
     return this.store;
   }
 
-  dispatch(action: {type: string}){
-    this.store.dispatch(action);
+  dispatch(action: any){
+    this.dispatch$.next(action);
+  }
+
+  addReducer(reducer: any){
+    this.reducers = {...this.reducers, ...reducer};
   }
 
 }

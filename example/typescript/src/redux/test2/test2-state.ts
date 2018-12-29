@@ -1,21 +1,18 @@
 import { State, Action, ActionContext } from 'redux-xs';
-import { IncrementCount, IncrementCount2 } from './test-actions';
-import { SubstateState } from './substate/substate-state';
+import { Increment2Count, Increment2Count2 } from './test2-actions';
 
-interface TestStateModel {
-  count: number,
-  qqq: string
+interface Test2StateModel {
+  aaa: number,
 }
 
-@State<TestStateModel>({
-  name: 'test',
+@State<Test2StateModel>({
+  name: 'test2',
   defaults: {
-    count: 3,
-    qqq: 'qwe',
+    aaa: 11,
   },
   // children: [SubstateState]
 })
-export class TestState {
+export class TestState2 {
 
   // @Action(IncrementCount)
   // feedAnimals(ctx: StateContext<TestStateModel>) {
@@ -26,17 +23,17 @@ export class TestState {
   //   });
   // }
 
-  @Action(IncrementCount)
-  increment(ctx: ActionContext<TestStateModel>, { payload }: IncrementCount) {
+  @Action(Increment2Count)
+  increment(ctx: ActionContext<Test2StateModel>, { payload }: Increment2Count) {
     const state = ctx.getState();
-debugger;
+
     ctx.setState({
       ...state,
-      count: state.count + 1
+      aaa: state.aaa + 1
     })
   }
 
-  @Action(IncrementCount2)
+  @Action(Increment2Count2)
   increment2(ctx: any) {
     const state = ctx.getState();
     // console.log(4444, state);

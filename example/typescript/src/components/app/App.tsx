@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from '../../redux/store';
-import { IncrementAction } from '../../redux/application/application-actions';
 import { rxStore } from 'redux-xs';
+import { IncrementCount } from '../../redux/test/test-actions';
 
 
 interface AppScreenProps {
@@ -14,10 +14,11 @@ const mapStateToProps = (state: RootState): AppScreenProps => ({
   count: state.application.count,
 });
 
+
 class App extends Component<AppScreenProps> {
 
   onClick = () => {
-    rxStore.dispatch(new IncrementAction())
+    rxStore.dispatch(new IncrementCount(10))
   };
 
   render() {

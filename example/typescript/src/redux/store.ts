@@ -4,6 +4,7 @@ import { applicationReducer } from './application/application-reducer';
 // import { rxStore } from '../../node_modules/redux-xs/dist';
 import { rxStore } from 'redux-xs';
 
+import { TestState2 } from './test2/test2-state';
 import { TestState } from './test/test-state';
 
 
@@ -25,7 +26,7 @@ const logger = (store: any) => {
 };
 
 const customMiddleWare = (store: any) => (next: any) => (action: any) => {
-  next({ ...action });
+  next({ ...action, type: action.constructor.type });
 };
 
 const middleware = [
@@ -39,17 +40,18 @@ export interface RootState {
   application: ApplicationState;
 }
 
-const reducer = combineReducers({
+const reducers = {
   application: applicationReducer,
-});
+};
 
 
 const store = rxStore.createStore({
-  reducer,
+  reducers,
   middleware,
   devtools: true,
   states: {
-    TestState
+    TestState2,
+    TestState,
   }
 });
 

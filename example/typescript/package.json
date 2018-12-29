@@ -15,7 +15,8 @@
     "react-scripts": "2.1.2",
     "redux": "^4.0.1",
     "redux-xs": "file:../..",
-    "typescript": "3.2.2"
+    "typescript": "3.2.2",
+    "uninstall": "0.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
