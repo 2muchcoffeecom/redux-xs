@@ -2,8 +2,8 @@ import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { ApplicationState } from './application/application-state';
 import { applicationReducer } from './application/application-reducer';
 // import { rxStore } from '../../node_modules/redux-xs/dist';
-import { rxStore } from 'redux-xs';
 
+import { rxStore } from 'redux-xs';
 import { TestState2 } from './test2/test2-state';
 import { TestState } from './test/test-state';
 
@@ -49,10 +49,10 @@ const store = rxStore.createStore({
   reducers,
   middleware,
   devtools: true,
-  states: {
+  states: [
     TestState2,
     TestState,
-  }
+  ]
 });
 
 export default store;

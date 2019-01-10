@@ -1,5 +1,7 @@
 import { applyMiddleware, combineReducers, compose, createStore, Middleware } from 'redux';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, zip } from 'rxjs';
+import { ActionContext } from './ActionContext';
+import { zipAll } from 'rxjs/operators';
 
 
 declare var window: any;
@@ -28,11 +30,27 @@ class RxStore {
     devtools = false,
   }: {
     reducers: any,
-    states: any,
+    states: any[],
     middleware: Middleware[],
     devtools: boolean
 
   }) {
+
+    // zip(...this.getStateDispatch(states))
+    // .subscribe(res => {
+    //   console.log(34343434, res);
+    // });
+
+    this.getStateDispatch(states)[0]
+    .subscribe(res => {
+      console.log(34343434, res);
+    });
+
+    this.getStateDispatch(states)[1]
+    .subscribe(res => {
+      console.log(34343434, res);
+    });
+
     const composeEnhancers =
       typeof window === 'object' &&
       window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
@@ -59,6 +77,13 @@ class RxStore {
     this.reducers = {...this.reducers, ...reducer};
   }
 
+  private getStateDispatch(states: any[]) {
+    return states.map((stateClass: any) => {
+      return Reflect.getMetadata('action:dispatch:observable', stateClass);
+    });
+  }
 }
+
+
 
 export const rxStore = new RxStore();

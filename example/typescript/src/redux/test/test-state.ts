@@ -1,6 +1,8 @@
 import { State, Action, ActionContext } from 'redux-xs';
 import { IncrementCount, IncrementCount2 } from './test-actions';
 import { SubstateState } from './substate/substate-state';
+import { of } from 'rxjs';
+import { delay, tap } from 'rxjs/operators';
 
 interface TestStateModel {
   count: number,
@@ -29,11 +31,22 @@ export class TestState {
   @Action(IncrementCount)
   increment(ctx: ActionContext<TestStateModel>, { payload }: IncrementCount) {
     const state = ctx.getState();
-debugger;
-    ctx.setState({
-      ...state,
-      count: state.count + 1
-    })
+
+    // ctx.setState({
+    //   ...state,
+    //   count: state.count + 1
+    // })
+
+    return of(1)
+    .pipe(
+      delay(3000),
+      tap(() => {
+        ctx.setState({
+          ...state,
+          count: state.count + 1
+        })
+      })
+    )
   }
 
   @Action(IncrementCount2)
