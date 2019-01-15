@@ -1,3 +1,3 @@
-export interface reducerParams {
+export interface IReducerParams {
   type: string
 }

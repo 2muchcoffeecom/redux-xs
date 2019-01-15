@@ -1,8 +1,8 @@
-import { State, Action, ActionContext } from 'redux-xs';
+import { State, Action, ActionContext, NewState } from 'redux-xs';
 import { Increment2Count, Increment2Count2 } from './test2-actions';
 import { IncrementCount } from '../test/test-actions';
 import { of } from 'rxjs';
-import { delay, mapTo } from 'rxjs/operators';
+import { delay, map, mapTo } from 'rxjs/operators';
 import { qwe } from '../test/test-state';
 
 interface Test2StateModel {
@@ -19,18 +19,32 @@ interface Test2StateModel {
 export class TestState2 {
 
   @Action(IncrementCount)
-  feedAnimals3(ctx: ActionContext<any>) {
-    return of(1)
+  feedAnimals1(next: NewState<Test2StateModel>, state: Test2StateModel) {
+    return next({
+      ...state,
+      aaa: state.aaa + 1
+    })
     .pipe(
-      delay(3000),
-      qwe({
-        pathState: () => {
-          console.log(222)
-          return 222;
-        }
-      }),
-    )
+      map((res) => {
+        return res.aaa
+      })
+    );
   }
+
+
+  // @Action(IncrementCount)
+  // feedAnimals3(ctx: ActionContext<any>) {
+  //   return of(1)
+  //   .pipe(
+  //     delay(3000),
+  //     qwe({
+  //       pathState: () => {
+  //         console.log(222)
+  //         return 222;
+  //       }
+  //     }),
+  //   )
+  // }
 
   // // @Action(IncrementCount)
   // // feedAnimals(ctx: StateContext<TestStateModel>) {

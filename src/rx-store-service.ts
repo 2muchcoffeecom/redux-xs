@@ -77,6 +77,7 @@ class RxStore {
 
   dispatch(action: any){
     this.dispatch$.next(action);
+    this.store.dispatch(action);
   }
 
   addReducer(reducer: any){

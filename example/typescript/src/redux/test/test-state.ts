@@ -1,4 +1,4 @@
-import { State, Action, ActionContext } from 'redux-xs';
+import { State, Action, ActionContext, NewState } from 'redux-xs';
 import { IncrementCount, IncrementCount2 } from './test-actions';
 import { SubstateState } from './substate/substate-state';
 import { Observable, of } from 'rxjs';
@@ -34,22 +34,35 @@ export function qwe(params: any) {
 export class TestState {
 
   @Action(IncrementCount)
-  feedAnimals(ctx: ActionContext<TestStateModel>) {
-    return of(1234567)
+  feedAnimals(next: NewState<TestStateModel>, state: TestStateModel) {
+    return next({
+      ...state,
+      count: state.count + 1
+    })
     .pipe(
-      delay(1000),
-      // map((res)=>{
-      //   return {state: {count: res}}
-      // })
-      qwe({
-        pathState: (q: any) => {
-          console.log(111)
-          return 111;
-        }
-      }),
-      // mapTo(of(111)),
-    )
+      map((res) => {
+        return res.count
+      })
+    );
   }
+
+  // @Action(IncrementCount)
+  // feedAnimals(ctx: ActionContext<TestStateModel>) {
+  //   return of(1234567)
+  //   .pipe(
+  //     delay(1000),
+  //     // map((res)=>{
+  //     //   return {state: {count: res}}
+  //     // })
+  //     qwe({
+  //       pathState: (q: any) => {
+  //         console.log(111)
+  //         return 111;
+  //       }
+  //     }),
+  //     // mapTo(of(111)),
+  //   )
+  // }
 
   // @Action(IncrementCount)
   // feedAnimals2(ctx: ActionContext<TestStateModel>) {

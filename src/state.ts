@@ -1,18 +1,15 @@
 import { rxStore } from './rx-store-service';
 import { filter, map, mapTo, switchMap, withLatestFrom } from 'rxjs/operators';
-import { isObservable, of, Subject } from 'rxjs';
+import { isObservable, Observable, of, Subject } from 'rxjs';
 import { ActionContext } from './ActionContext';
-import { actionsData } from './interfaces/actions-data.interface';
-import { reducerParams } from './interfaces/reducer-params.interface';
+import { IActionsData } from './interfaces/actions-data.interface';
+import { IReducerParams } from './interfaces/reducer-params.interface';
+import { IStateParams } from './interfaces/state-params.interface';
 
-interface IStateParams<Y> {
-  name: string;
-  defaults: Y;
-  children?: any[]
-}
 
 class StateDecorator<Y, T extends AnyClass> {
-  private actionsData: actionsData[];
+  private actionsData: IActionsData[];
+  private newState: Y;
 
   constructor(
     private params: IStateParams<Y>,
@@ -31,9 +28,34 @@ class StateDecorator<Y, T extends AnyClass> {
 
   private onInit() {
     this.actionsData = this.getActionsData<Y, T>(this.params, this.target);
+
+    const dispatch$ = rxStore.dispatch$
+    .pipe(
+      withLatestFrom(of(this.actionsData)),
+      map(([actionInstance, actionsData]) => {
+        const actionData = actionsData.find((data: IActionsData) => actionInstance instanceof data.actionClass);
+        return {
+          actionInstance,
+          actionData,
+        };
+      }),
+    )
+    .subscribe(
+      ({actionInstance, actionData}: { actionInstance: any, actionData: IActionsData }) => {
+        // console.log(actionInstance, actionData);
+        const next = (newState) => {
+          this.newState = {...newState};
+          return of(this.newState);
+        };
+
+        const state = rxStore.store.getState()[this.params.name];
+        actionData.actionFn(next, state);
+      }
+    )
+
   }
 
-  private getActionsData<Y, T extends AnyClass>(params: IStateParams<Y>, target: T): actionsData[] {
+  private getActionsData<Y, T extends AnyClass>(params: IStateParams<Y>, target: T): IActionsData[] {
     const metadataKeys: string[] = Reflect.getMetadataKeys(target.prototype);
     return metadataKeys
     .map((key: string) => {
@@ -42,7 +64,7 @@ class StateDecorator<Y, T extends AnyClass> {
   }
 
   private createReducers() {
-    const reducerParams: reducerParams[] = this.actionsData.map((actionData: actionsData) => {
+    const reducerParams: IReducerParams[] = this.actionsData.map((actionData: IActionsData) => {
       return {
         type: actionData.actionClass.type,
       }
@@ -51,13 +73,14 @@ class StateDecorator<Y, T extends AnyClass> {
     return this.createReducer(this.params.defaults, reducerParams)
   }
 
-  private createReducer(defaults: Y, params: reducerParams[]) {
-    return function reducer(state = defaults, action: AnyAction) {
+  private createReducer(defaults: Y, params: IReducerParams[]) {
+    return (state = defaults, action: AnyAction) => {
 
       const types = params.map(({type}) => type);
       const index = types.indexOf(action.type);
       if (index >= 0) {
-        return state; // return params[index].ctx.getNewState() || state;
+        console.log(123, this.newState);
+        return this.newState || state; // return params[index].ctx.getNewState() || state;
       }
       return state;
     }
@@ -136,13 +159,13 @@ export function State<Y>(params: IStateParams<Y>) {
 // }
 //
 // function createReducers(params: any, actionsData: any) {
-//   const reducerParams = actionsData.map((actionData: any) => {
+//   const IReducerParams = actionsData.map((actionData: any) => {
 //     return {
 //       type: actionData.actionClass.type,
 //       ctx: actionData.ctx
 //     }
 //   });
-//   return createReducer(params.defaults, reducerParams)
+//   return createReducer(params.defaults, IReducerParams)
 // }
 //
 // function createReducer(defaults: any, params: any[]){
