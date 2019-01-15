@@ -1,15 +1,9 @@
-import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { ApplicationState } from './application/application-state';
 import { applicationReducer } from './application/application-reducer';
-// import { rxStore } from '../../node_modules/redux-xs/dist';
 
-import { rxStore } from 'redux-xs';
 import { TestState2 } from './test2/test2-state';
 import { TestState } from './test/test-state';
-
-
-
-
+import { rxStore } from 'redux-xs';
 
 
 const logger = (store: any) => {
@@ -25,16 +19,11 @@ const logger = (store: any) => {
   };
 };
 
-const customMiddleWare = (store: any) => (next: any) => (action: any) => {
-  next({ ...action, type: action.constructor.type });
-};
+
 
 const middleware = [
-  customMiddleWare,
   logger
 ];
-
-
 
 export interface RootState {
   application: ApplicationState;

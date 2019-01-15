@@ -1,6 +1,6 @@
 export class IncrementCount {
   static readonly type = '[Test] Increment';
-
+  //
   constructor(public payload: number) {
   }
 

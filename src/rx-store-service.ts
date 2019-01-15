@@ -1,7 +1,11 @@
-import { applyMiddleware, combineReducers, compose, createStore, Middleware } from 'redux';
+import { applyMiddleware, combineReducers, compose, createStore, Middleware, Reducer } from 'redux';
 import { ReplaySubject, zip } from 'rxjs';
 import { ActionContext } from './ActionContext';
-import { zipAll } from 'rxjs/operators';
+import { map, mergeAll, mergeMap, zipAll } from 'rxjs/operators';
+import { middlewareRx } from './middleware';
+// import { AnyState } from './interfaces/any-state';
+// import { AnyState } from './interfaces/any-state';
+// import { AnyState } from './interfaces/any-state';
 
 
 declare var window: any;
@@ -29,34 +33,36 @@ class RxStore {
     middleware = [],
     devtools = false,
   }: {
-    reducers: any,
-    states: any[],
+    reducers: {[key:string]: Reducer},
+    states: AnyState[],
     middleware: Middleware[],
     devtools: boolean
 
   }) {
 
     // zip(...this.getStateDispatch(states))
-    // .subscribe(res => {
+    // .pipe(
+    //   mergeMap(res => {
+    //     // debugger;
+    //     return zip(...res.map((el: any) => el.actionStream))
+    //   }),
+    //   // mergeAll()
+    //   // zipAll()
+    // )
+    // .subscribe((res: any[]) => {
+    //   res.forEach((value: any) => {
+    //     value.pathState('qweqweqwe')
+    //   });
     //   console.log(34343434, res);
     // });
 
-    this.getStateDispatch(states)[0]
-    .subscribe(res => {
-      console.log(34343434, res);
-    });
-
-    this.getStateDispatch(states)[1]
-    .subscribe(res => {
-      console.log(34343434, res);
-    });
-
     const composeEnhancers =
       typeof window === 'object' &&
-      window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
+      window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ &&
+      devtools? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
 
     const enhancer = composeEnhancers(
-      applyMiddleware(...middleware),
+      applyMiddleware(middlewareRx, ...middleware),
     );
 
     this.reducers = {...this.reducers, ...reducers};

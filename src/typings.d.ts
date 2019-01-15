@@ -15,3 +15,14 @@ declare module '*.svg' {
   export default svgUrl;
   export { svgComponent as ReactComponent }
 }
+
+type AnyState = {
+  new (): {}
+};
+
+type AnyAction = {
+  new (...args: any[]): {}
+  type: string;
+};
+
+type AnyClass = {new(...args:any[]):{}};
