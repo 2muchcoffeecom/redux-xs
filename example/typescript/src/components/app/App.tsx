@@ -10,15 +10,15 @@ interface AppScreenProps {
   dispatch?: any,
 }
 
-const mapStateToProps = (state: RootState): AppScreenProps => ({
-  count: state.application.count,
+const mapStateToProps = (state: any): AppScreenProps => ({
+  count: state.test.count,
 });
 
 
 class App extends Component<AppScreenProps> {
 
   onClick = () => {
-    rxStore.dispatch(new IncrementCount(10))
+    rxStore.dispatch(new IncrementCount(10));
   };
 
   render() {

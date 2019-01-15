@@ -33,23 +33,25 @@ class StateDecorator<Y, T extends AnyClass> {
     .pipe(
       withLatestFrom(of(this.actionsData)),
       map(([actionInstance, actionsData]) => {
-        const actionData = actionsData.find((data: IActionsData) => actionInstance instanceof data.actionClass);
+        const filteredActionsData = actionsData.filter((data: IActionsData) => actionInstance instanceof data.actionClass);
         return {
           actionInstance,
-          actionData,
+          filteredActionsData,
         };
       }),
     )
     .subscribe(
-      ({actionInstance, actionData}: { actionInstance: any, actionData: IActionsData }) => {
-        // console.log(actionInstance, actionData);
+      ({actionInstance, filteredActionsData}: { actionInstance: any, filteredActionsData: IActionsData[] }) => {
         const next = (newState) => {
           this.newState = {...newState};
           return of(this.newState);
         };
 
-        const state = rxStore.store.getState()[this.params.name];
-        actionData.actionFn(next, state);
+        this.newState = rxStore.store.getState()[this.params.name];
+
+        filteredActionsData.forEach((actionData) => {
+          actionData.actionFn<Y>(next, this.newState, actionInstance);
+        });
       }
     )
 

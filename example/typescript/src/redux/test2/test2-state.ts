@@ -19,10 +19,10 @@ interface Test2StateModel {
 export class TestState2 {
 
   @Action(IncrementCount)
-  feedAnimals1(next: NewState<Test2StateModel>, state: Test2StateModel) {
+  feedAnimals1(next: NewState<Test2StateModel>, state: Test2StateModel, {payload}: IncrementCount) {
     return next({
       ...state,
-      aaa: state.aaa + 1
+      aaa: state.aaa + payload
     })
     .pipe(
       map((res) => {

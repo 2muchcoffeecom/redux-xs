@@ -26,7 +26,7 @@ export function qwe(params: any) {
 @State<TestStateModel>({
   name: 'test',
   defaults: {
-    count: 3,
+    count: 5,
     qqq: 'qwe',
   },
   // children: [SubstateState]
@@ -34,14 +34,28 @@ export function qwe(params: any) {
 export class TestState {
 
   @Action(IncrementCount)
-  feedAnimals(next: NewState<TestStateModel>, state: TestStateModel) {
+  feedAnimals4(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
+    console.log(action)
     return next({
       ...state,
-      count: state.count + 1
+      count: state.count + action.payload
     })
     .pipe(
       map((res) => {
         return res.count
+      })
+    );
+  }
+
+  @Action(IncrementCount)
+  feedAnimals5(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
+    return next({
+      ...state,
+      qqq: 'www'
+    })
+    .pipe(
+      map((res) => {
+        return res.qqq
       })
     );
   }
