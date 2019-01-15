@@ -1,10 +1,11 @@
 import { rxStore } from './rx-store-service';
-import { filter, map, mapTo, switchMap, withLatestFrom } from 'rxjs/operators';
-import { isObservable, Observable, of, Subject } from 'rxjs';
+import { delay, filter, map, mapTo, mergeAll, switchMap, withLatestFrom } from 'rxjs/operators';
+import { from, isObservable, Observable, of, Subject } from 'rxjs';
 import { ActionContext } from './ActionContext';
 import { IActionsData } from './interfaces/actions-data.interface';
 import { IReducerParams } from './interfaces/reducer-params.interface';
 import { IStateParams } from './interfaces/state-params.interface';
+import { IncrementCount } from '../example/typescript/src/redux/test/test-actions';
 
 
 class StateDecorator<Y, T extends AnyClass> {
@@ -29,19 +30,12 @@ class StateDecorator<Y, T extends AnyClass> {
   private onInit() {
     this.actionsData = this.getActionsData<Y, T>(this.params, this.target);
 
-    const dispatch$ = rxStore.dispatch$
+    const actionsSideEffect$ = rxStore.dispatch$
     .pipe(
       withLatestFrom(of(this.actionsData)),
       map(([actionInstance, actionsData]) => {
         const filteredActionsData = actionsData.filter((data: IActionsData) => actionInstance instanceof data.actionClass);
-        return {
-          actionInstance,
-          filteredActionsData,
-        };
-      }),
-    )
-    .subscribe(
-      ({actionInstance, filteredActionsData}: { actionInstance: any, filteredActionsData: IActionsData[] }) => {
+
         const next = (newState) => {
           this.newState = {...newState};
           return of(this.newState);
@@ -49,12 +43,25 @@ class StateDecorator<Y, T extends AnyClass> {
 
         this.newState = rxStore.store.getState()[this.params.name];
 
-        filteredActionsData.forEach((actionData) => {
-          actionData.actionFn<Y>(next, this.newState, actionInstance);
+        return filteredActionsData.map((actionData) => {
+          return actionData.actionFn<Y>(next, this.newState, actionInstance);
         });
-      }
-    )
+      }),
+      delay(0),
+    );
 
+    actionsSideEffect$
+    .pipe(
+      switchMap(actionsSideEffects => {
+        return from(actionsSideEffects).pipe(mergeAll());
+      }),
+    )
+    .subscribe(action => {
+      if(!action){
+        return;
+      }
+      rxStore.dispatch(action);
+    })
   }
 
   private getActionsData<Y, T extends AnyClass>(params: IStateParams<Y>, target: T): IActionsData[] {
@@ -81,8 +88,7 @@ class StateDecorator<Y, T extends AnyClass> {
       const types = params.map(({type}) => type);
       const index = types.indexOf(action.type);
       if (index >= 0) {
-        console.log(123, this.newState);
-        return this.newState || state; // return params[index].ctx.getNewState() || state;
+        return this.newState || state;
       }
       return state;
     }

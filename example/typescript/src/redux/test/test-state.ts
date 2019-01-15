@@ -34,31 +34,58 @@ export function qwe(params: any) {
 export class TestState {
 
   @Action(IncrementCount)
-  feedAnimals4(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
-    console.log(action)
+  feedAnimals1(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
     return next({
       ...state,
       count: state.count + action.payload
     })
     .pipe(
       map((res) => {
-        return res.count
+        return new IncrementCount2(3)
       })
     );
   }
 
-  @Action(IncrementCount)
-  feedAnimals5(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
+
+  @Action(IncrementCount2)
+  feedAnimals2(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount2) {
     return next({
       ...state,
-      qqq: 'www'
+      count: state.count + action.payload
     })
     .pipe(
       map((res) => {
-        return res.qqq
+        return false
       })
     );
   }
+
+  // @Action(IncrementCount)
+  // feedAnimals4(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
+  //   console.log(action)
+  //   return next({
+  //     ...state,
+  //     count: state.count + action.payload
+  //   })
+  //   .pipe(
+  //     map((res) => {
+  //       return res.count
+  //     })
+  //   );
+  // }
+  //
+  // @Action(IncrementCount)
+  // feedAnimals5(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
+  //   return next({
+  //     ...state,
+  //     qqq: 'www'
+  //   })
+  //   .pipe(
+  //     map((res) => {
+  //       return res.qqq
+  //     })
+  //   );
+  // }
 
   // @Action(IncrementCount)
   // feedAnimals(ctx: ActionContext<TestStateModel>) {

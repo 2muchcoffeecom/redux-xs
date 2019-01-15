@@ -18,18 +18,25 @@ interface Test2StateModel {
 })
 export class TestState2 {
 
-  @Action(IncrementCount)
-  feedAnimals1(next: NewState<Test2StateModel>, state: Test2StateModel, {payload}: IncrementCount) {
-    return next({
-      ...state,
-      aaa: state.aaa + payload
-    })
-    .pipe(
-      map((res) => {
-        return res.aaa
-      })
-    );
-  }
+  // @Action(IncrementCount)
+  // feedAnimals1(next: NewState<Test2StateModel>, state: Test2StateModel, {payload}: IncrementCount) {
+  //   return next({
+  //     ...state,
+  //     aaa: state.aaa + payload
+  //   })
+  //   .pipe(
+  //     map((state) => {
+  //       return state.aaa
+  //     })
+  //   );
+  // }
+
+
+
+
+
+
+
 
 
   // @Action(IncrementCount)
