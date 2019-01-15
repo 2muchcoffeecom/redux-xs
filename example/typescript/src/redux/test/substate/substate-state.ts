@@ -1,14 +1,14 @@
 import { State, Action } from 'redux-xs';
 
 interface SubstateStateModel {
-  qqq: string
+  count: number
 }
 
-// @State<SubstateStateModel>({
-//   name: 'substate',
-//   defaults: {
-//     qqq: 'sdsdf'
-//   }
-// })
+@State<SubstateStateModel>({
+  name: 'substate',
+  defaults: {
+    count: 1
+  }
+})
 export class SubstateState {
 }

@@ -40,22 +40,6 @@ class RxStore {
 
   }) {
 
-    // zip(...this.getStateDispatch(states))
-    // .pipe(
-    //   mergeMap(res => {
-    //     // debugger;
-    //     return zip(...res.map((el: any) => el.actionStream))
-    //   }),
-    //   // mergeAll()
-    //   // zipAll()
-    // )
-    // .subscribe((res: any[]) => {
-    //   res.forEach((value: any) => {
-    //     value.pathState('qweqweqwe')
-    //   });
-    //   console.log(34343434, res);
-    // });
-
     const composeEnhancers =
       typeof window === 'object' &&
       window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ &&
@@ -90,7 +74,6 @@ class RxStore {
     });
   }
 }
-
 
 
 export const rxStore = new RxStore();

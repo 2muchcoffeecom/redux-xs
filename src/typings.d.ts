@@ -21,8 +21,9 @@ type AnyState = {
 };
 
 type AnyAction = {
-  new (...args: any[]): {}
-  type: string;
+  new (...args: any[]): {
+    type: string;
+  }
 };
 
 type AnyClass = {new(...args:any[]):{}};

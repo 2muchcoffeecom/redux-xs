@@ -3,7 +3,6 @@ import { Increment2Count, Increment2Count2 } from './test2-actions';
 import { IncrementCount } from '../test/test-actions';
 import { of } from 'rxjs';
 import { delay, map, mapTo } from 'rxjs/operators';
-import { qwe } from '../test/test-state';
 
 interface Test2StateModel {
   aaa: number,
@@ -18,18 +17,13 @@ interface Test2StateModel {
 })
 export class TestState2 {
 
-  // @Action(IncrementCount)
-  // feedAnimals1(next: NewState<Test2StateModel>, state: Test2StateModel, {payload}: IncrementCount) {
-  //   return next({
-  //     ...state,
-  //     aaa: state.aaa + payload
-  //   })
-  //   .pipe(
-  //     map((state) => {
-  //       return state.aaa
-  //     })
-  //   );
-  // }
+  @Action(IncrementCount)
+  feedAnimals1(next: NewState<Test2StateModel>, state: Test2StateModel, {payload}: IncrementCount) {
+    return next({
+      ...state,
+      aaa: state.aaa + payload
+    })
+  }
 
 
 

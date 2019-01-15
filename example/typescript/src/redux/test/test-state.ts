@@ -13,32 +13,19 @@ interface TestStateModel {
 }
 
 
-export function qwe(params: any) {
-  return (observable: Observable<any>) => {
-
-    return observable.pipe(
-      mapTo(of(params))
-    );
-  }
-}
-
-
 @State<TestStateModel>({
   name: 'test',
   defaults: {
     count: 5,
     qqq: 'qwe',
   },
-  // children: [SubstateState]
+  children: [SubstateState]
 })
 export class TestState {
 
   @Action(IncrementCount)
   feedAnimals1(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
-    return next({
-      ...state,
-      count: state.count + action.payload
-    })
+    return next(state)
     .pipe(
       map((res) => {
         return new IncrementCount2(3)
@@ -53,11 +40,6 @@ export class TestState {
       ...state,
       count: state.count + action.payload
     })
-    .pipe(
-      map((res) => {
-        return false
-      })
-    );
   }
 
   // @Action(IncrementCount)
@@ -74,18 +56,18 @@ export class TestState {
   //   );
   // }
   //
-  // @Action(IncrementCount)
-  // feedAnimals5(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
-  //   return next({
-  //     ...state,
-  //     qqq: 'www'
-  //   })
-  //   .pipe(
-  //     map((res) => {
-  //       return res.qqq
-  //     })
-  //   );
-  // }
+  @Action(IncrementCount)
+  feedAnimals5(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
+    return next({
+      ...state,
+      qqq: 'www'
+    })
+    .pipe(
+      map((res) => {
+        return false
+      })
+    );
+  }
 
   // @Action(IncrementCount)
   // feedAnimals(ctx: ActionContext<TestStateModel>) {

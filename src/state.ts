@@ -6,6 +6,8 @@ import { IActionsData } from './interfaces/actions-data.interface';
 import { IReducerParams } from './interfaces/reducer-params.interface';
 import { IStateParams } from './interfaces/state-params.interface';
 import { IncrementCount } from '../example/typescript/src/redux/test/test-actions';
+import { instanceOf } from 'prop-types';
+import { type } from 'os';
 
 
 class StateDecorator<Y, T extends AnyClass> {
@@ -28,7 +30,7 @@ class StateDecorator<Y, T extends AnyClass> {
   }
 
   private onInit() {
-    this.actionsData = this.getActionsData<Y, T>(this.params, this.target);
+    this.actionsData = this.getActionsData<T>(this.target);
 
     const actionsSideEffect$ = rxStore.dispatch$
     .pipe(
@@ -55,16 +57,14 @@ class StateDecorator<Y, T extends AnyClass> {
       switchMap(actionsSideEffects => {
         return from(actionsSideEffects).pipe(mergeAll());
       }),
+      filter(action => action.type && typeof action.type === 'string')
     )
     .subscribe(action => {
-      if(!action){
-        return;
-      }
       rxStore.dispatch(action);
     })
   }
 
-  private getActionsData<Y, T extends AnyClass>(params: IStateParams<Y>, target: T): IActionsData[] {
+  private getActionsData<T extends AnyClass>(target: T): IActionsData[] {
     const metadataKeys: string[] = Reflect.getMetadataKeys(target.prototype);
     return metadataKeys
     .map((key: string) => {
@@ -73,22 +73,9 @@ class StateDecorator<Y, T extends AnyClass> {
   }
 
   private createReducers() {
-    const reducerParams: IReducerParams[] = this.actionsData.map((actionData: IActionsData) => {
-      return {
-        type: actionData.actionClass.type,
-      }
-    });
-
-    return this.createReducer(this.params.defaults, reducerParams)
-  }
-
-  private createReducer(defaults: Y, params: IReducerParams[]) {
-    return (state = defaults, action: AnyAction) => {
-
-      const types = params.map(({type}) => type);
-      const index = types.indexOf(action.type);
-      if (index >= 0) {
-        return this.newState || state;
+    return (state = this.params.defaults) => {
+      if(this.newState && this.newState !== state){
+        return this.newState;
       }
       return state;
     }
@@ -100,91 +87,5 @@ export function State<Y>(params: IStateParams<Y>) {
 
     const decoratorClass = new StateDecorator<Y, T>(params, constructor);
     return decoratorClass.getTarget();
-
-    // return constructor;
-
-    // const dispatchAction$ = new Subject();
-    // Reflect.defineMetadata(`action:dispatch:observable`, dispatchAction$, constructor);
-    //
-    // const actionsData = getActionsData<T>(params, constructor);
-    //
-    // console.log(45445, actionsData)
-    //
-    // const dispatch$ = rxStore.dispatch$
-    // .pipe(
-    //   withLatestFrom(of(actionsData)),
-    //   map(([actionInstance, actionsData]) => {
-    //     const actionData = actionsData.find((data: any) => actionInstance instanceof data.actionClass);
-    //     return {
-    //       actionInstance,
-    //       actionData,
-    //     };
-    //   }),
-    // );
-    //
-    // dispatch$
-    // .pipe(
-    //   filter((data: any) => data.actionData),
-    //   switchMap((data: any) => {
-    //     const stateActionResult = data.actionData.actionFn(data.actionData.ctx, data.actionInstance);
-    //
-    //     return stateActionResult.pipe(
-    //       map((actionStream: any) => {
-    //         return {
-    //           ...data,
-    //           actionStream
-    //         }
-    //       })
-    //     );
-    //   })
-    // )
-    // .subscribe((data: any) => {
-    //   console.log(222, data, params)
-    //   dispatchAction$.next(data);
-    //   // rxStore.store.dispatch(data.actionInstance)
-    // });
-    //
-    // rxStore.addReducer({
-    //   [params.name]: createReducers(params, actionsData)
-    // });
-    //
-    // return constructor;
   };
 }
-
-// function getActionsData<T extends {new(...args:any[]):{}}>(params: any, target: T) {
-//   const metadataKeys = Reflect.getMetadataKeys(target.prototype);
-//   return metadataKeys
-//   .map(key => {
-//     return Reflect.getMetadata(key, target.prototype);
-//   })
-//   .map(data => {
-//     return {
-//       ...data,
-//       ctx: new ActionContext(params.name),
-//     };
-//   });
-// }
-//
-// function createReducers(params: any, actionsData: any) {
-//   const IReducerParams = actionsData.map((actionData: any) => {
-//     return {
-//       type: actionData.actionClass.type,
-//       ctx: actionData.ctx
-//     }
-//   });
-//   return createReducer(params.defaults, IReducerParams)
-// }
-//
-// function createReducer(defaults: any, params: any[]){
-//   return function reducer(state = defaults, action: any) {
-//
-//     const types = params.map(({type}) => type);
-//     const index = types.indexOf(action.type);
-//     if(index >= 0){
-//       return params[index].ctx.getNewState() || state;
-//     }
-//
-//     return state;
-//   }
-// }

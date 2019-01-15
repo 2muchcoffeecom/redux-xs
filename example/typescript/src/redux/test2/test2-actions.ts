@@ -1,5 +1,5 @@
 export class Increment2Count {
-  static readonly type = '[Test2] Increment';
+  readonly type = '[Test2] Increment';
 
   constructor(public payload: number) {
   }
@@ -7,5 +7,5 @@ export class Increment2Count {
 }
 
 export class Increment2Count2 {
-  static readonly type = '[Test2] Increment2';
+  readonly type = '[Test2] Increment2';
 }
