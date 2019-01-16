@@ -1,3 +1,3 @@
 export class IncrementCount {
-  readonly type = '[Substate] Increment';
+  static readonly type = '[Substate] Increment';
 }

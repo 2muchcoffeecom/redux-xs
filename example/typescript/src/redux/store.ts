@@ -40,7 +40,7 @@ const store = rxStore.createStore({
   devtools: true,
   states: [
     TestState,
-    TestState2,
+    // TestState2,
   ]
 });
 

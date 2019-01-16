@@ -49,6 +49,7 @@ class RxStore {
       applyMiddleware(middlewareRx, ...middleware),
     );
 
+    console.log(this.reducers);
     this.reducers = {...this.reducers, ...reducers};
     this.store = createStore(combineReducers(this.reducers), enhancer);
 
@@ -65,6 +66,7 @@ class RxStore {
   }
 
   addReducer(reducer: any){
+    debugger;
     this.reducers = {...this.reducers, ...reducer};
   }
 

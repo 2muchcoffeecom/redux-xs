@@ -19,42 +19,49 @@ interface TestStateModel {
     count: 5,
     qqq: 'qwe',
   },
-  // children: [SubstateState]
+  children: [SubstateState]
 })
 export class TestState {
 
-  @Action(IncrementCount)
-  feedAnimals1(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
-    return next({
-      ...state,
-      count: state.count + action.payload
-    })
-    .pipe(
-      mapTo(new IncrementCount2(3))
-    );
-  }
+  // @Action(IncrementCount)
+  // feedAnimals1(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
+  //   return next({
+  //     ...state,
+  //     count: state.count + action.payload
+  //   })
+  //   .pipe(
+  //     mapTo(new IncrementCount2(3))
+  //   );
+  // }
+  //
+  // @Action(IncrementCount2)
+  // feedAnimals11(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
+  //   return next({
+  //     ...state,
+  //     qqq: 'www'
+  //   })
+  //   // .pipe(
+  //   //   map((res) => {
+  //   //     return new IncrementCount2(3)
+  //   //   })
+  //   // );
+  // }
+  //
+  //
+  // @Action(IncrementCount2)
+  // feedAnimals2(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount2) {
+  //   return next({
+  //     ...state,
+  //     count: state.count + action.payload
+  //   })
+  // }
 
-  @Action(IncrementCount2)
-  feedAnimals11(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
-    return next({
-      ...state,
-      qqq: 'www'
-    })
-    // .pipe(
-    //   map((res) => {
-    //     return new IncrementCount2(3)
-    //   })
-    // );
-  }
 
 
-  @Action(IncrementCount2)
-  feedAnimals2(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount2) {
-    return next({
-      ...state,
-      count: state.count + action.payload
-    })
-  }
+
+
+
+
   //
   // @Action(IncrementCount)
   // feedAnimals5(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {

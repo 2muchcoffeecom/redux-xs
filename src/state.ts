@@ -55,6 +55,7 @@ class StateDecorator<Y, T extends AnyClass> {
 
   private createReducers() {
     return (state = this.params.defaults, action: AnyAction) => {
+      console.log(this.params)
       return this.executeActionsFn(state, action);
     }
   }
