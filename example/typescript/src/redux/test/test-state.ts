@@ -19,118 +19,56 @@ interface TestStateModel {
     count: 5,
     qqq: 'qwe',
   },
-  children: [SubstateState]
+  // children: [SubstateState]
 })
 export class TestState {
 
   @Action(IncrementCount)
   feedAnimals1(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
-    return next(state)
-    .pipe(
-      map((res) => {
-        return new IncrementCount2(3)
-      })
-    );
-  }
-
-
-  @Action(IncrementCount2)
-  feedAnimals2(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount2) {
     return next({
       ...state,
       count: state.count + action.payload
     })
+    // .pipe(
+    //   map((res) => {
+    //     return new IncrementCount2(3)
+    //   })
+    // );
   }
 
-  // @Action(IncrementCount)
-  // feedAnimals4(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
-  //   console.log(action)
-  //   return next({
-  //     ...state,
-  //     count: state.count + action.payload
-  //   })
-  //   .pipe(
-  //     map((res) => {
-  //       return res.count
-  //     })
-  //   );
-  // }
-  //
   @Action(IncrementCount)
-  feedAnimals5(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
+  feedAnimals11(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
     return next({
       ...state,
       qqq: 'www'
     })
-    .pipe(
-      map((res) => {
-        return false
-      })
-    );
+    // .pipe(
+    //   map((res) => {
+    //     return new IncrementCount2(3)
+    //   })
+    // );
   }
 
-  // @Action(IncrementCount)
-  // feedAnimals(ctx: ActionContext<TestStateModel>) {
-  //   return of(1234567)
-  //   .pipe(
-  //     delay(1000),
-  //     // map((res)=>{
-  //     //   return {state: {count: res}}
-  //     // })
-  //     qwe({
-  //       pathState: (q: any) => {
-  //         console.log(111)
-  //         return 111;
-  //       }
-  //     }),
-  //     // mapTo(of(111)),
-  //   )
-  // }
 
-  // @Action(IncrementCount)
-  // feedAnimals2(ctx: ActionContext<TestStateModel>) {
-  //   return of(1)
-  //   .pipe(
-  //     delay(2000),
-  //     mapTo(of(222)),
-  //   )
-  // }
-
-  // @Action(IncrementCount)
-  // feedAnimals(ctx: StateContext<TestStateModel>) {
-  //   const state = ctx.getState();
-  //   ctx.setState({
-  //     ...state,
-  //     feed: !state.feed
-  //   });
-  // }
-
-  // @Action(IncrementCount)
-  // increment(ctx: ActionContext<TestStateModel>, { payload }: IncrementCount) {
-  //   const state = ctx.getState();
-  //
-  //   // ctx.setState({
-  //   //   ...state,
-  //   //   count: state.count + 1
-  //   // })
-  //
-  //   return of(1)
-  //   .pipe(
-  //     delay(3000),
-  //     tap(() => {
-  //       ctx.setState({
-  //         ...state,
-  //         count: state.count + 1
-  //       })
-  //     })
-  //   )
-  // }
-  //
   // @Action(IncrementCount2)
-  // increment2(ctx: any) {
-  //   const state = ctx.getState();
-  //   // console.log(4444, state);
-  //   ctx.setState('new state 2')
+  // feedAnimals2(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount2) {
+  //   return next({
+  //     ...state,
+  //     count: state.count + action.payload
+  //   })
+  // }
+  //
+  // @Action(IncrementCount)
+  // feedAnimals5(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
+  //   return next({
+  //     ...state,
+  //     qqq: 'www'
+  //   })
+  //   .pipe(
+  //     map((res) => {
+  //       return false
+  //     })
+  //   );
   // }
 
 }

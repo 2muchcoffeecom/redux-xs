@@ -29,39 +29,48 @@ class StateDecorator<Y, T extends AnyClass> {
     return this.target;
   }
 
+  next(newState){
+    return function () {
+      console.log(333)
+    }
+  }
+  qqq: any;
+
   private onInit() {
     this.actionsData = this.getActionsData<T>(this.target);
 
-    const actionsSideEffect$ = rxStore.dispatch$
-    .pipe(
-      withLatestFrom(of(this.actionsData)),
-      map(([actionInstance, actionsData]) => {
-        const filteredActionsData = actionsData.filter((data: IActionsData) => actionInstance instanceof data.actionClass);
+    // const actionsSideEffect$ = rxStore.dispatch$
+    // .pipe(
+    //   withLatestFrom(of(this.actionsData)),
+    //   map(([actionInstance, actionsData]) => {
+    //     const filteredActionsData = actionsData.filter((data: IActionsData) => actionInstance instanceof data.actionClass);
+    //
+    //     const next = (newState) => {
+    //       this.newState = {...newState};
+    //       return of(this.newState);
+    //     };
+    //
+    //     this.newState = rxStore.store.getState()[this.params.name];
+    //
+    //     return filteredActionsData.map((actionData) => {
+    //       return actionData.actionFn<Y>(this.next, this.newState, actionInstance);
+    //     });
+    //   }),
+    //   delay(0),
+    // );
+    //
+    // actionsSideEffect$.subscribe();
 
-        const next = (newState) => {
-          this.newState = {...newState};
-          return of(this.newState);
-        };
-
-        this.newState = rxStore.store.getState()[this.params.name];
-
-        return filteredActionsData.map((actionData) => {
-          return actionData.actionFn<Y>(next, this.newState, actionInstance);
-        });
-      }),
-      delay(0),
-    );
-
-    actionsSideEffect$
-    .pipe(
-      switchMap(actionsSideEffects => {
-        return from(actionsSideEffects).pipe(mergeAll());
-      }),
-      filter(action => action.type && typeof action.type === 'string')
-    )
-    .subscribe(action => {
-      rxStore.dispatch(action);
-    })
+    // actionsSideEffect$
+    // .pipe(
+    //   switchMap(actionsSideEffects => {
+    //     return from(actionsSideEffects).pipe(mergeAll());
+    //   }),
+    //   filter(action => action.type && typeof action.type === 'string')
+    // )
+    // .subscribe(action => {
+    //   rxStore.dispatch(action);
+    // })
   }
 
   private getActionsData<T extends AnyClass>(target: T): IActionsData[] {
@@ -72,11 +81,77 @@ class StateDecorator<Y, T extends AnyClass> {
     });
   }
 
+
   private createReducers() {
-    return (state = this.params.defaults) => {
-      if(this.newState && this.newState !== state){
-        return this.newState;
+
+    let dispatchedAction;
+
+    rxStore.dispatch$
+    .subscribe(action => {
+      dispatchedAction = action;
+    });
+
+    function next(nextState) {
+      return (state) => {
+        console.log(nextState, state, 555)
+
+        console.log(3, state)
+        nextState.state = state;
       }
+    }
+    
+    function actionFn(next, state, action) {
+
+      console.log(2, state)
+
+      next({
+        ...state,
+        count: state.count + 1
+      }, action);
+
+      return 111;
+    }
+
+    function getState(actionsFn, state, action) {
+
+      // console.log(actionsFn);
+
+
+      let nextState: any = {};
+      console.log(1111, nextState)
+      const sideEfects = actionsFn.map((fn: any) => {
+        const sendState = nextState.state ? {...nextState.state} : state;
+        fn(next(nextState), sendState, action)
+      });
+
+      console.log(1, nextState)
+      return Object.keys(nextState).length ? nextState.state : state;
+    }
+
+    return (state = this.params.defaults, action: AnyAction) => {
+
+
+      const filteredActionsFn = this.actionsData
+      .filter(actionData => {
+        return actionData.actionClass.type === action.type;
+      })
+      .map(actionData => {
+        return actionData.actionFn;
+      });
+
+      return getState(filteredActionsFn, state, action);
+
+
+      // console.log(this.actionsData)
+      //
+      // const newState = f(state, action);
+      // console.log(5, newState);
+
+      // console.log(dispatchedAction, action);
+      // this.next(state)
+      // console.log(this.params)
+
+
       return state;
     }
   }

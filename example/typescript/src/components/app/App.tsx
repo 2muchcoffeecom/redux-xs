@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { rxStore } from 'redux-xs';
-import { IncrementCount } from '../../redux/test/test-actions';
+import { IncrementCount, IncrementCount2 } from '../../redux/test/test-actions';
 
 
 interface AppScreenProps {
@@ -19,6 +19,7 @@ class App extends Component<AppScreenProps> {
 
   onClick = () => {
     rxStore.dispatch(new IncrementCount(10));
+    // rxStore.dispatch(new IncrementCount2(10));
   };
 
   render() {

@@ -39,8 +39,8 @@ const store = rxStore.createStore({
   middleware,
   devtools: true,
   states: [
-    TestState2,
     TestState,
+    // TestState2,
   ]
 });
 
