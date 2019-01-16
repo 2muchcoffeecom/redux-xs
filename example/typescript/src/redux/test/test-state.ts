@@ -29,14 +29,12 @@ export class TestState {
       ...state,
       count: state.count + action.payload
     })
-    // .pipe(
-    //   map((res) => {
-    //     return new IncrementCount2(3)
-    //   })
-    // );
+    .pipe(
+      mapTo(new IncrementCount2(3))
+    );
   }
 
-  @Action(IncrementCount)
+  @Action(IncrementCount2)
   feedAnimals11(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
     return next({
       ...state,
@@ -50,13 +48,13 @@ export class TestState {
   }
 
 
-  // @Action(IncrementCount2)
-  // feedAnimals2(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount2) {
-  //   return next({
-  //     ...state,
-  //     count: state.count + action.payload
-  //   })
-  // }
+  @Action(IncrementCount2)
+  feedAnimals2(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount2) {
+    return next({
+      ...state,
+      count: state.count + action.payload
+    })
+  }
   //
   // @Action(IncrementCount)
   // feedAnimals5(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount) {
