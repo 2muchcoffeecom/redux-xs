@@ -1,4 +1,4 @@
-import { State, Action, ActionContext, NewState } from 'redux-xs';
+import { State, Action, NewState } from 'redux-xs';
 import { IncrementCount, IncrementCount2 } from '../../test-actions';
 
 interface Substate2StateModel {

@@ -1,4 +1,4 @@
-import { Reducer, AnyAction } from 'redux';
+import { Reducer } from 'redux';
 import { IStateParams } from './state-params.interface';
 
 export interface IMetaReducer {

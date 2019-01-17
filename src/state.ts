@@ -16,7 +16,7 @@ class StateDecorator<Y, T extends AnyClass> {
   ) {
     this.onInit();
 
-    rxStore.addReducer({
+    rxStore.addMetaReducer({
       name: this.params.name,
       params: this.params,
       stateClass: this.target,
@@ -34,10 +34,11 @@ class StateDecorator<Y, T extends AnyClass> {
     this.sideEffects$
     .pipe(
       delay(0),
-      switchMap(actionsSideEffects => {
-        return from(actionsSideEffects).pipe(mergeAll());
-      }),
-      filter((action: any) => action && action.constructor && action.constructor.type && typeof action.constructor.type === 'string')
+      switchMap(actionsSideEffects => from(actionsSideEffects).pipe(mergeAll())),
+      switchMap(actions => Array.isArray(actions) ? from(actions) : of(actions)),
+      filter((action: any) => {
+        return action && action.constructor && action.constructor.type && typeof action.constructor.type === 'string';
+      })
     )
     .subscribe((action: AnyAction) => {
       rxStore.dispatch(action);
@@ -74,9 +75,9 @@ class StateDecorator<Y, T extends AnyClass> {
     }
   }
 
-  private next(nextState) {
-    return (state) => {
-      nextState.state = state;
+  private next(nextState, sendingState: T) {
+    return (state?: T) => {
+      nextState.state = state || sendingState;
 
       return of(nextState.state);
     }
@@ -94,8 +95,8 @@ class StateDecorator<Y, T extends AnyClass> {
     });
 
     const sideEffects = filteredActionsFn.map((fn: any) => {
-      const sendState = nextState.state ? {...nextState.state} : state;
-      return fn(this.next(nextState), sendState, action)
+      const sendingState = nextState.state ? {...nextState.state} : state;
+      return fn(this.next(nextState, sendingState), sendingState, action)
     });
 
     this.sideEffects$.next(sideEffects);

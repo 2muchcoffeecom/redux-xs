@@ -1,4 +1,4 @@
-import { State, Action, ActionContext, NewState } from 'redux-xs';
+import { State, Action, NewState } from 'redux-xs';
 import { Increment2Count, Increment2Count2 } from './test2-actions';
 import { IncrementCount } from '../test/test-actions';
 import { of } from 'rxjs';

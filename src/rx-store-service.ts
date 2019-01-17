@@ -55,7 +55,7 @@ class RxStore {
     this.store.dispatch(action);
   }
 
-  addReducer(params: IMetaReducer){
+  addMetaReducer(params: IMetaReducer){
     this.metaReducers = [...this.metaReducers, params ];
   }
 
