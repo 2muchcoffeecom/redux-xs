@@ -1,23 +1,14 @@
 import { applyMiddleware, combineReducers, compose, createStore, Middleware, Reducer } from 'redux';
-import { ReplaySubject, zip } from 'rxjs';
-import { ActionContext } from './ActionContext';
-import { map, mergeAll, mergeMap, zipAll } from 'rxjs/operators';
 import { middlewareRx } from './middleware';
-// import { AnyState } from './interfaces/any-state';
-// import { AnyState } from './interfaces/any-state';
-// import { AnyState } from './interfaces/any-state';
+import { IMetaReducer } from './interfaces/meta-reducer.interface';
 
 
 declare var window: any;
 
-
 class RxStore {
-  private static instance: RxStore;
-
-  public dispatch$: ReplaySubject<any> = new ReplaySubject();
-
   public store: any;
-  public reducers: any = {};
+  public metaReducers: IMetaReducer[] = [];
+  private static instance: RxStore;
 
   constructor() {
     if (!RxStore.instance) {
@@ -49,9 +40,9 @@ class RxStore {
       applyMiddleware(middlewareRx, ...middleware),
     );
 
-    console.log(this.reducers);
-    this.reducers = {...this.reducers, ...reducers};
-    this.store = createStore(combineReducers(this.reducers), enhancer);
+    this.metaReducers = this.addedParentField(this.metaReducers);
+    const reducersWithChildren = {...this.createReducers(this.metaReducers), ...reducers};
+    this.store = createStore(combineReducers(reducersWithChildren), enhancer);
 
     return this.store;
   }
@@ -60,20 +51,64 @@ class RxStore {
     return this.store;
   }
 
-  dispatch(action: any){
-    this.dispatch$.next(action);
+  dispatch(action: AnyAction){
     this.store.dispatch(action);
   }
 
-  addReducer(reducer: any){
-    debugger;
-    this.reducers = {...this.reducers, ...reducer};
+  addReducer(params: IMetaReducer){
+    this.metaReducers = [...this.metaReducers, params ];
   }
 
-  private getStateDispatch(states: any[]) {
-    return states.map((stateClass: any) => {
-      return Reflect.getMetadata('action:dispatch:observable', stateClass);
+  private addedParentField(metaReducers){
+    return metaReducers.map((metaReducer) => {
+
+      const parents = metaReducers
+      .filter(filteringMetaReducer => {
+        return filteringMetaReducer.params.children && filteringMetaReducer.params.children.indexOf(metaReducer.stateClass) >= 0;
+      })
+      .map(filteredMetaReducer => filteredMetaReducer);
+
+      if(parents.length > 1){
+        throw new Error(`Multiple use of the ${metaReducer.stateClass.name} class in the field children`);
+      }
+
+      metaReducer.parents = parents.pop();
+      metaReducer.isChild = !!metaReducer.parents;
+      return metaReducer;
     });
+  }
+
+  private createReducers(metaReducers: IMetaReducer[]){
+    function createReducerWithChildren(metaReducer: IMetaReducer, metaReducers: IMetaReducer[]) {
+      if(metaReducer.params.children){
+        return metaReducers
+        .filter(filteringMetaReducer => {
+          if(!metaReducer.params.children){
+            return false
+          }
+          return metaReducer.params.children.indexOf(filteringMetaReducer.stateClass) >= 0;
+        })
+        .map(filteredMetaReducer => {
+          return {
+            name: filteredMetaReducer.name,
+            reducer: filteredMetaReducer.createReducer(createReducerWithChildren(filteredMetaReducer, metaReducers))
+          }
+        });
+      }
+      return [];
+    }
+
+    return metaReducers.reduce((acc, metaReducer) => {
+      if(metaReducer.isChild){
+        return acc;
+      }
+
+      const reducerChildren = createReducerWithChildren(metaReducer, metaReducers);
+      return {
+        ...acc,
+        [metaReducer.name]: metaReducer.createReducer(reducerChildren)
+      }
+    }, {})
   }
 }
 

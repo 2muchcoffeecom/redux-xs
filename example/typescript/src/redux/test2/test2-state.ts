@@ -3,6 +3,8 @@ import { Increment2Count, Increment2Count2 } from './test2-actions';
 import { IncrementCount } from '../test/test-actions';
 import { of } from 'rxjs';
 import { delay, map, mapTo } from 'rxjs/operators';
+import { SubstateState } from '../test/substate/substate-state';
+import { Substate2State } from '../test/substate/substate2/substate2-state';
 
 interface Test2StateModel {
   aaa: number,
@@ -13,7 +15,7 @@ interface Test2StateModel {
   defaults: {
     aaa: 11,
   },
-  // children: [SubstateState]
+  children: []
 })
 export class TestState2 {
 

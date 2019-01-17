@@ -3,6 +3,7 @@ import { IncrementCount, IncrementCount2 } from './test-actions';
 import { SubstateState } from './substate/substate-state';
 import { Observable, of } from 'rxjs';
 import { delay, map, mapTo, tap } from 'rxjs/operators';
+import { Substate2State } from './substate/substate2/substate2-state';
 // import { Action } from '../../../node_modules/redux-xs/dist';
 // import { State } from '../../../node_modules/redux-xs/dist';
 // import { ActionContext } from '../../../node_modules/redux-xs/dist';
@@ -48,13 +49,41 @@ export class TestState {
   // }
   //
   //
-  // @Action(IncrementCount2)
+  // @Action(IncrementCount)
   // feedAnimals2(next: NewState<TestStateModel>, state: TestStateModel, action: IncrementCount2) {
   //   return next({
   //     ...state,
-  //     count: state.count + action.payload
+  //     count: state.count + action.payload,
   //   })
   // }
+
+
+  @Action(IncrementCount)
+  feedAnimals2(next: NewState<any>, state: any, action: IncrementCount2) {
+    console.log(45345345345, state);
+    return next({
+      ...state,
+      count: state.count + action.payload,
+      substate: {
+        ...state.substate,
+        count: 100,
+        // substate2: {
+        //   count: 100
+        // },
+      },
+    })
+  }
+
+  @Action(IncrementCount)
+  feedAnimals3(next: NewState<any>, state: any, action: IncrementCount2) {
+    return next({
+      ...state,
+      count: state.count + action.payload,
+      substate: {
+        count: state.substate.count + action.payload,
+      },
+    })
+  }
 
 
 

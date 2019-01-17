@@ -1,13 +1,9 @@
+import { from, of, Subject } from 'rxjs';
+
 import { rxStore } from './rx-store-service';
-import { delay, filter, map, mapTo, mergeAll, switchMap, withLatestFrom } from 'rxjs/operators';
-import { from, isObservable, Observable, of, Subject } from 'rxjs';
-import { ActionContext } from './ActionContext';
+import { delay, filter, mergeAll, switchMap } from 'rxjs/operators';
 import { IActionsData } from './interfaces/actions-data.interface';
-import { IReducerParams } from './interfaces/reducer-params.interface';
 import { IStateParams } from './interfaces/state-params.interface';
-import { IncrementCount } from '../example/typescript/src/redux/test/test-actions';
-import { instanceOf } from 'prop-types';
-import { type } from 'os';
 
 
 class StateDecorator<Y, T extends AnyClass> {
@@ -21,7 +17,10 @@ class StateDecorator<Y, T extends AnyClass> {
     this.onInit();
 
     rxStore.addReducer({
-      [this.params.name]: this.createReducers()
+      name: this.params.name,
+      params: this.params,
+      stateClass: this.target,
+      createReducer: this.createReducer.bind(this)
     });
   }
 
@@ -40,7 +39,7 @@ class StateDecorator<Y, T extends AnyClass> {
       }),
       filter((action: any) => action && action.constructor && action.constructor.type && typeof action.constructor.type === 'string')
     )
-    .subscribe((action: any) => {
+    .subscribe((action: AnyAction) => {
       rxStore.dispatch(action);
     })
   }
@@ -53,10 +52,25 @@ class StateDecorator<Y, T extends AnyClass> {
     });
   }
 
-  private createReducers() {
+  private createReducer(children?: any[]) {
     return (state = this.params.defaults, action: AnyAction) => {
-      console.log(this.params)
-      return this.executeActionsFn(state, action);
+      const nextState = this.executeActionsFn(state, action);
+      if(children){
+
+        const childrenStates = children.reduce((acc, children) => {
+          return {
+            ...acc,
+            [children.name]: children.reducer(nextState[children.name], action),
+          };
+        }, {});
+
+        return {
+          ...nextState,
+          ...childrenStates,
+        }
+      }
+
+      return nextState;
     }
   }
 
