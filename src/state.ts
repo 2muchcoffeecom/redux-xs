@@ -1,14 +1,14 @@
-import { from, of, Subject } from 'rxjs';
+import { from, isObservable, of, ReplaySubject } from 'rxjs';
 
 import { coreService } from './core.service';
-import { delay, filter, mergeAll, switchMap } from 'rxjs/operators';
+import { delay, filter, switchMap } from 'rxjs/operators';
 import { IActionsData } from './interfaces/actions-data.interface';
 import { IStateParams } from './interfaces/state-params.interface';
 
 
 class StateDecorator<Y, T extends AnyClass> {
   private actionsData: IActionsData[];
-  private sideEffects$: Subject<any[]> = new Subject();
+  private sideEffects$: ReplaySubject<any[]> = new ReplaySubject();
 
   constructor(
     private params: IStateParams<Y>,
@@ -34,7 +34,13 @@ class StateDecorator<Y, T extends AnyClass> {
     this.sideEffects$
     .pipe(
       delay(0),
-      switchMap(actionsSideEffects => from(actionsSideEffects).pipe(mergeAll())),
+      switchMap(actionsSideEffects => from(actionsSideEffects)),
+      switchMap(actionsSideEffects => {
+        if(isObservable(actionsSideEffects)){
+          return actionsSideEffects
+        }
+        return from(actionsSideEffects);
+      }),
       switchMap(actions => Array.isArray(actions) ? from(actions) : of(actions)),
       filter((action: any) => {
         return action && action.constructor && action.constructor.type && typeof action.constructor.type === 'string';
