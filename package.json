@@ -1,10 +1,10 @@
 {
   "name": "redux-xs",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.2",
   "description": "",
-  "author": "logvinoleg89",
+  "author": "2muchcoffeecom",
   "license": "MIT",
-  "repository": "logvinoleg89/redux-xs",
+  "repository": "2muchcoffeecom/redux-xs",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",

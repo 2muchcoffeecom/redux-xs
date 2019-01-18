@@ -1,6 +1,8 @@
-import { applyMiddleware, combineReducers, compose, createStore, Middleware, Reducer } from 'redux';
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import { IRawReducer } from './interfaces/raw-reducer.interface';
 import { middlewareRx } from './middleware';
+import { createStoreType } from './types/create-store.type';
+import { dispatchType } from './types/dispatch.type';
 
 
 declare var window: any;
@@ -18,18 +20,12 @@ class CoreService {
     return CoreService.instance;
   }
 
-  createStore({
+  createStore: createStoreType = ({
     reducers,
     states,
     middleware = [],
     devtools = false,
-  }: {
-    reducers: {[key:string]: Reducer},
-    states: AnyState[],
-    middleware: Middleware[],
-    devtools: boolean
-
-  }) {
+  }) => {
 
     const composeEnhancers =
       typeof window === 'object' &&
@@ -45,15 +41,15 @@ class CoreService {
     this.store = createStore(combineReducers(reducersWithChildren), enhancer);
 
     return this.store;
-  }
+  };
 
   getStore() {
     return this.store;
   }
 
-  dispatch(action: AnyAction){
+  dispatch: dispatchType = (action) => {
     this.store.dispatch(action);
-  }
+  };
 
   addRawReducer(params: IRawReducer){
     this.rawReducers = [...this.rawReducers, params ];

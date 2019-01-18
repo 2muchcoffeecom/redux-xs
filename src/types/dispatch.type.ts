@@ -1,0 +1,1 @@
+export type dispatchType = (action: AnyAction) => void

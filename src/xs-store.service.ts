@@ -1,11 +1,16 @@
-import { coreService } from './core.service';
 import { Store } from 'redux';
+import { coreService } from './core.service';
+import { createStoreType } from './types/create-store.type';
+import { dispatchType } from './types/dispatch.type';
+
+
+
 
 class XsStore {
   private static instance: XsStore;
 
-  createStore: typeof coreService.createStore = coreService.createStore.bind(coreService);
-  dispatch: typeof coreService.dispatch = coreService.dispatch.bind(coreService);
+  createStore: createStoreType = coreService.createStore.bind(coreService);
+  dispatch: dispatchType = coreService.dispatch.bind(coreService);
 
   getStore(): Store {
     return coreService.store;
@@ -19,6 +24,5 @@ class XsStore {
     return XsStore.instance;
   }
 }
-
 
 export const xsStore = new XsStore();
