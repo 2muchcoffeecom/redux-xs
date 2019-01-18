@@ -4,6 +4,7 @@ import { coreService } from './core.service';
 import { delay, filter, switchMap } from 'rxjs/operators';
 import { IActionsData } from './interfaces/actions-data.interface';
 import { IStateParams } from './interfaces/state-params.interface';
+import { mergeDeep } from './utils/merge-deep';
 
 
 class StateDecorator<Y, T extends AnyClass> {
@@ -89,6 +90,14 @@ class StateDecorator<Y, T extends AnyClass> {
     }
   }
 
+  private patchState(nextState, sendingState: T) {
+    return (state?: T) => {
+      nextState.state = state ? mergeDeep(sendingState, state) : sendingState;
+
+      return of(nextState.state);
+    }
+  }
+
   private executeActionsFn(state, action) {
     let nextState: any = {};
 
@@ -104,9 +113,9 @@ class StateDecorator<Y, T extends AnyClass> {
       const sendingState = nextState.state ? {...nextState.state} : state;
 
       const ctx = {
-        state: sendingState,
+        getState: () => sendingState,
         setState: this.setState(nextState, sendingState),
-        // patchState: this.patchState(nextState, sendingState) ToDo Implement patch state
+        patchState: this.patchState(nextState, sendingState)
       };
 
       return fn(ctx, action)
