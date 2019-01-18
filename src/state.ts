@@ -53,11 +53,8 @@ class StateDecorator<Y, T extends AnyClass> {
   }
 
   private getActionsData<T extends AnyClass>(target: T): IActionsData[] {
-    const metadataKeys: string[] = Reflect.getMetadataKeys(target.prototype);
-    return metadataKeys
-    .map((key: string) => {
-      return Reflect.getMetadata(key, target.prototype);
-    });
+    const metadataKeys: string[] = Reflect.getMetadataKeys(target.prototype) || [];
+    return metadataKeys.map((key: string) => Reflect.getMetadata(key, target.prototype));
   }
 
   private createReducer(children?: any[]) {
@@ -102,8 +99,8 @@ class StateDecorator<Y, T extends AnyClass> {
     let nextState: any = {};
 
     const filteredActionsFn = this.actionsData
-    .filter(actionData => {
-      return actionData.actionClass.type === action.type;
+    .filter((actionData: IActionsData) => {
+      return actionData.actionsClass.map(actionsClass => actionsClass.type).indexOf(action.type) >= 0 ;
     })
     .map(actionData => {
       return actionData.actionFn;
@@ -113,7 +110,7 @@ class StateDecorator<Y, T extends AnyClass> {
       const sendingState = nextState.state ? {...nextState.state} : state;
 
       const ctx = {
-        getState: () => sendingState,
+        state: sendingState,
         setState: this.setState(nextState, sendingState),
         patchState: this.patchState(nextState, sendingState)
       };

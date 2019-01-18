@@ -1,3 +1,3 @@
 export interface IReducerParams {
-  actionClass: AnyAction
+  actionsClass: AnyAction
 }
