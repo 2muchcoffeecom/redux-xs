@@ -1,7 +1,13 @@
 import { from, isObservable, of, ReplaySubject } from 'rxjs';
 
 import { coreService } from './core.service';
-import { delay, filter, switchMap } from 'rxjs/operators';
+import {
+  delay,
+  filter,
+  map,
+  mergeAll,
+  switchMap
+} from 'rxjs/operators';
 import { IActionsData } from './interfaces/actions-data.interface';
 import { IStateParams } from './interfaces/state-params.interface';
 import { mergeDeep } from './utils/merge-deep';
@@ -35,17 +41,18 @@ class StateDecorator<Y, T extends AnyClass> {
     this.sideEffects$
     .pipe(
       delay(0),
-      switchMap(actionsSideEffects => from(actionsSideEffects)),
-      switchMap(actionsSideEffects => {
+      switchMap((actionsSideEffects) => from(actionsSideEffects)),
+      map((actionsSideEffects) => {
         if(isObservable(actionsSideEffects)){
           return actionsSideEffects
         }
-        return from(actionsSideEffects);
+        return from(actionsSideEffects)
       }),
+      mergeAll(),
       switchMap(actions => Array.isArray(actions) ? from(actions) : of(actions)),
       filter((action: any) => {
         return action && action.constructor && action.constructor.type && typeof action.constructor.type === 'string';
-      })
+      }),
     )
     .subscribe((action: AnyAction) => {
       coreService.dispatch(action);
