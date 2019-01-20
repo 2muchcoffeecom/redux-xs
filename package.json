@@ -1,6 +1,6 @@
 {
   "name": "redux-xs",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "description": "",
   "author": "2muchcoffeecom",
   "license": "MIT",
@@ -37,7 +37,7 @@
   "devDependencies": {
     "@svgr/rollup": "^2.4.1",
     "@types/jest": "^23.1.5",
-    "@types/react": "^16.3.13",
+    "@types/react": "^16.7.18",
     "@types/react-dom": "^16.0.5",
     "@types/react-redux": "^6.0.11",
     "@types/redux": "^3.6.0",
@@ -45,7 +45,7 @@
     "babel-runtime": "^6.26.0",
     "cross-env": "^5.1.4",
     "gh-pages": "^1.2.0",
-    "react": "^16.4.1",
+    "react": "^16.7.0",
     "react-dom": "^16.4.1",
     "react-scripts-ts": "^2.16.0",
     "rollup": "^0.62.0",

@@ -11,6 +11,7 @@ import {
 import { IActionsData } from './interfaces/actions-data.interface';
 import { IStateParams } from './interfaces/state-params.interface';
 import { mergeDeep } from './utils/merge-deep';
+import { RawReducer } from './interfaces/raw-reducer.interface';
 
 
 class StateDecorator<Y, T extends AnyClass> {
@@ -23,12 +24,14 @@ class StateDecorator<Y, T extends AnyClass> {
   ) {
     this.onInit();
 
-    coreService.addRawReducer({
-      name: this.params.name,
-      params: this.params,
-      stateClass: this.target,
-      createReducer: this.createReducer.bind(this)
-    });
+    coreService.addRawReducer(
+      new RawReducer({
+        name: this.params.name,
+        params: this.params,
+        stateClass: this.target,
+        createReducer: this.createReducer.bind(this)
+      })
+    );
   }
 
   getTarget() {
@@ -76,10 +79,7 @@ class StateDecorator<Y, T extends AnyClass> {
           };
         }, {});
 
-        return {
-          ...nextState,
-          ...childrenStates,
-        }
+        Object.assign(nextState, childrenStates);
       }
 
       return nextState;
@@ -96,7 +96,7 @@ class StateDecorator<Y, T extends AnyClass> {
 
   private patchState(nextState, sendingState: T) {
     return (state?: T) => {
-      nextState.state = state ? mergeDeep(sendingState, state) : sendingState;
+      nextState.state = state ? {...mergeDeep(sendingState, state)} : sendingState;
 
       return of(nextState.state);
     }

@@ -1,16 +1,19 @@
-import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
-import { IRawReducer } from './interfaces/raw-reducer.interface';
+import { RawReducer } from './interfaces/raw-reducer.interface';
 import { middlewareRx } from './middleware';
 import { createStoreType } from './types/create-store.type';
 import { dispatchType } from './types/dispatch.type';
+import { Subject } from 'rxjs';
+import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
 
 
 declare var window: any;
 
 class CoreService {
   public store: any;
-  public rawReducers: IRawReducer[] = [];
+  public rawReducers: RawReducer[] = [];
   private static instance: CoreService;
+
+  state$: Subject<any> = new Subject();
 
   constructor() {
     if (!CoreService.instance) {
@@ -40,6 +43,8 @@ class CoreService {
     const reducersWithChildren = {...this.createReducers(this.rawReducers), ...reducers};
     this.store = createStore(combineReducers(reducersWithChildren), enhancer);
 
+    this.getState$(this.store);
+
     return this.store;
   };
 
@@ -47,12 +52,27 @@ class CoreService {
     return this.store;
   }
 
+  getState() {
+    return this.store.getState();
+  }
+
   dispatch: dispatchType = (action) => {
     this.store.dispatch(action);
   };
 
-  addRawReducer(params: IRawReducer){
+  addRawReducer(params: RawReducer){
     this.rawReducers = [...this.rawReducers, params ];
+  }
+
+  getRawReducer(stateClass): RawReducer | undefined {
+    return this.rawReducers.find(rawReducer => rawReducer.stateClass === stateClass)
+  }
+
+  private getState$(store) {
+    this.state$.next(store.getState());
+    this.store.subscribe(() => {
+      this.state$.next(store.getState());
+    });
   }
 
   private addedParentField(rawReducers){
@@ -68,14 +88,13 @@ class CoreService {
         throw new Error(`Multiple use of the ${rawReducer.stateClass.name} class in the field children`);
       }
 
-      rawReducer.parents = parents.pop();
-      rawReducer.isChild = !!rawReducer.parents;
+      rawReducer.parent = parents.pop();
       return rawReducer;
     });
   }
 
-  private createReducers(rawReducers: IRawReducer[]){
-    function createReducerWithChildren(rawReducer: IRawReducer, rawReducers: IRawReducer[]) {
+  private createReducers(rawReducers: RawReducer[]){
+    function createReducerWithChildren(rawReducer: RawReducer, rawReducers: RawReducer[]) {
       if(rawReducer.params.children){
         return rawReducers
         .filter(filteringRawReducer => {
