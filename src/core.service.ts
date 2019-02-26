@@ -2,9 +2,8 @@ import { RawReducer } from './interfaces/raw-reducer.interface';
 import { middlewareRx } from './middleware';
 import { createStoreType } from './types/create-store.type';
 import { dispatchType } from './types/dispatch.type';
-import { Subject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
-
 
 declare var window: any;
 
@@ -13,7 +12,7 @@ class CoreService {
   public rawReducers: RawReducer[] = [];
   private static instance: CoreService;
 
-  state$: Subject<any> = new Subject();
+  state$: ReplaySubject<any> = new ReplaySubject(1);
 
   constructor() {
     if (!CoreService.instance) {
@@ -23,6 +22,7 @@ class CoreService {
     return CoreService.instance;
   }
 
+  // TODO added RootState typing
   createStore: createStoreType = ({
     reducers,
     states,

@@ -1,29 +1,19 @@
-import { ReplaySubject } from 'rxjs';
-import {
-  filter,
-  map,
-  pluck,
-  scan,
-} from 'rxjs/operators';
+import { Observable, ReplaySubject } from 'rxjs';
 import {
   handlerSelectType,
   pathSelectType,
   selectParamsType,
   stateSelectType
 } from './interfaces/select-params.interface';
-import { coreService } from './core.service';
+import { xsStore } from './xs-store.service';
 
-class SelectDecorator<T> {
-
+class SelectDecorator<T, S = any> {
   private state$ = new ReplaySubject();
 
-  constructor(target: T, propertyKey: string, params: pathSelectType );
-  constructor(target: T, propertyKey: string, params: handlerSelectType );
-  constructor(target: T, propertyKey: string, params: stateSelectType );
   constructor(
     private target: T,
     private propertyKey: string,
-    private params: selectParamsType,
+    private currentState$: Observable<S>,
   ) {
     Reflect.defineMetadata(`select:state:${propertyKey}`, this.state$, target);
 
@@ -37,19 +27,7 @@ class SelectDecorator<T> {
   }
 
   private onInit() {
-
-    coreService.state$
-    .pipe(
-      map(state => this.getCurrentState(state)),
-      scan((acc, next) => {
-        const previous = acc.pop()
-        return [previous, next]
-      }, []),
-      filter(([previous, next]) => {
-        return previous !== next
-      }),
-      pluck('1'),
-    )
+    this.currentState$
     .subscribe((state) => {
       Object.defineProperty(this.target, this.propertyKey, {
         value: state,
@@ -63,22 +41,6 @@ class SelectDecorator<T> {
       })
     });
   }
-
-  getCurrentState(state){
-    const rawReducer = coreService.getRawReducer(this.params);
-
-    if(rawReducer){
-      return rawReducer.path.reduce((acc, name) => {
-        return acc[name]
-      }, state);
-    }
-
-    if(this.params instanceof Function && !rawReducer){
-      return this.params(coreService.getState());
-    }
-
-    return state;
-  }
 }
 
 
@@ -87,7 +49,8 @@ export function Select(params: pathSelectType);
 export function Select(params: stateSelectType);
 export function Select(params: selectParamsType) {
   return function <T>(target: T, propertyKey: string, descriptor?: PropertyDescriptor) {
-    const decoratorClass = new SelectDecorator<T>(target, propertyKey, params);
+    const state$ = xsStore.select(params);
+    const decoratorClass = new SelectDecorator<T>(target, propertyKey, state$);
     return decoratorClass.getDescriptor();
   };
 }
