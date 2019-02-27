@@ -8,7 +8,8 @@ import {
   stateSelectType
 } from './interfaces/select-params.interface';
 import { Observable } from 'rxjs';
-import { filter, map, pluck, publishLast, publishReplay, scan } from 'rxjs/operators';
+import { filter, map, pluck, scan } from 'rxjs/operators';
+import { createSelector } from './utils/create-selector';
 
 
 class XsStore {
@@ -26,32 +27,13 @@ class XsStore {
   }
 
   // TODO not working with promises
-  // TODO added reselect
-  // TODO added memoized selector
   select<T = any>(params: pathSelectType ): Observable<T>;
   select<T = any>(params: handlerSelectType ): Observable<T>;
   select<T = any>(params: stateSelectType ): Observable<T>;
   select<T = any>(params: selectParamsType): Observable<T> {
-    const getCurrentState = (state) => {
-
-      const rawReducer = coreService.getRawReducer(params);
-
-      if(rawReducer){
-        return rawReducer.path.reduce((acc, name) => {
-          return acc[name]
-        }, state);
-      }
-
-      if(params instanceof Function && !rawReducer){
-        return params(coreService.getState());
-      }
-
-      return state;
-    };
-
     return coreService.state$
     .pipe(
-      map(state => getCurrentState(state)),
+      map(state => createSelector(params)(state)),
       scan((acc, next) => {
 
         const previous = acc.pop()

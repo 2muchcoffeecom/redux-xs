@@ -9,3 +9,4 @@ export { Selector } from './selector';
 export { State } from './state';
 export { Action } from './action';
 export { decorate } from './utils/decorate';
+export { createSelector } from './utils/create-selector';

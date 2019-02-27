@@ -29,7 +29,6 @@ class CoreService {
     middleware = [],
     devtools = false,
   }) => {
-
     const composeEnhancers =
       typeof window === 'object' &&
       window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ &&
