@@ -24,8 +24,8 @@ class CoreService {
 
   // TODO added RootState typing
   createStore: createStoreType = ({
-    reducers,
     states,
+    reducers = {},
     middleware = [],
     devtools = false,
   }) => {

@@ -1,8 +1,8 @@
 import { Middleware, Reducer, Store } from 'redux';
 
 export type createStoreType = (params: {
-  reducers: {[key:string]: Reducer},
   states: AnyState[],
+  reducers?: {[key:string]: Reducer},
   middleware?: Middleware[],
-  devtools: boolean
+  devtools?: boolean
 }) => Store
