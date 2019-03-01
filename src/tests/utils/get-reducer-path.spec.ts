@@ -1,9 +1,8 @@
 import 'reflect-metadata';
 
-import { State } from '../state';
-import { xsStore } from '../xs-store.service';
-import { getReducerPath } from '../utils/get-reducer-path';
-
+import { State } from '../../state';
+import { xsStore } from '../../xs-store.service';
+import { getReducerPath } from '../../utils/get-reducer-path';
 
 describe('Get Reducer Path Util', () => {
 

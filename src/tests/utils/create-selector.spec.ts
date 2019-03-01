@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import * as reselect from 'reselect'
 
-import { State } from '../state';
-import { xsStore } from '../xs-store.service';
-import { createSelector } from '../utils/create-selector';
+import { State } from '../../state';
+import { xsStore } from '../../xs-store.service';
+import { createSelector } from '../../utils/create-selector';
 
 
 describe('Create Selector', () => {
