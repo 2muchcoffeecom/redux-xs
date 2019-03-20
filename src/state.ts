@@ -69,17 +69,17 @@ class StateDecorator<Y, T extends AnyClass> {
 
   private createReducer(children?: any[]) {
     return (state = this.params.defaults, action: AnyAction) => {
-      const nextState = this.executeActionsFn(state, action);
+      let nextState = this.executeActionsFn(state, action);
       if(children){
 
         const childrenStates = children.reduce((acc, children) => {
           return {
             ...acc,
-            [children.name]: children.reducer(nextState[children.name], action),
+            [children.name]: {...children.reducer(nextState[children.name], action)}
           };
         }, {});
 
-        Object.assign(nextState, childrenStates);
+        nextState = {...nextState, ...childrenStates}
       }
 
       return nextState;
