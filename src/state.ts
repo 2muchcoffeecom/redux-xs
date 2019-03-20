@@ -42,7 +42,7 @@ class StateDecorator<Y, T extends AnyClass> {
     this.actionsData = this.getActionsData<T>(this.target);
     this.sideEffects$
     .pipe(
-      delay(4000),
+      delay(0),
       switchMap((actionsSideEffects) => from(actionsSideEffects)),
       map((actionsSideEffects) => {
         if(isObservable(actionsSideEffects)){
