@@ -54,7 +54,7 @@ class StateDecorator<Y, T extends AnyClass> {
       mergeAll(),
       switchMap(actions => Array.isArray(actions) ? from(actions) : of(actions)),
       filter((action: any) => {
-        return action && action.constructor && action.constructor.type && typeof action.constructor.type === 'string';
+        return action && ((action.constructor && action.constructor.type && typeof action.constructor.type === 'string') || (action.type && typeof action.type === 'string'));
       }),
     )
     .subscribe((action: AnyAction) => {
