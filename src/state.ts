@@ -40,10 +40,9 @@ class StateDecorator<Y, T extends AnyClass> {
 
   private onInit() {
     this.actionsData = this.getActionsData<T>(this.target);
-
     this.sideEffects$
     .pipe(
-      delay(0),
+      delay(4000),
       switchMap((actionsSideEffects) => from(actionsSideEffects)),
       map((actionsSideEffects) => {
         if(isObservable(actionsSideEffects)){
@@ -94,9 +93,12 @@ class StateDecorator<Y, T extends AnyClass> {
     }
   }
 
-  private patchState(nextState, sendingState: T) {
-    return (state?: T) => {
-      nextState.state = state ? {...mergeDeep(sendingState, state)} : sendingState;
+  private patchState(nextState, sendingState: any) {
+    return (state?: any) => {
+      nextState.state = {
+        ...sendingState,
+        ...state
+      } as T;
 
       return of(nextState.state);
     }
